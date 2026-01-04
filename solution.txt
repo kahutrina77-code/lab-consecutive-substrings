@@ -1,252 +1,46 @@
-CONSECUTIVE SUBSTRINGS - SOLUTION DOCUMENTATION
+CONSECUTIVE SUBSTRINGS SOLUTION
 
 
-STUDENT: TRINA LUSENO
-DATE: 04-01-2026
-
-
-1. PROBLEM IN MY OWN WORDS
-
-
-I need to create a function that takes a string and returns ALL possible 
-consecutive substrings. "Consecutive" means the characters have to be next 
-to each other in the original string - so for "abc", I can't return "ac" 
-because 'a' and 'c' aren't next to each other.
-
-The function should return these substrings in the order they appear.
-
-Examples I understand:
-- "abc" → ['a', 'ab', 'abc', 'b', 'bc', 'c']
-- "a" → ['a']  
-- "" → []
-
-The key insight: For each character position, I need to generate all 
-substrings that START at that position.
-
-
-2. MY TEST CASES
-
-
-Before looking at the provided tests, I came up with these:
-
-Test 1: Empty string
-Input: ""
-Expected: []
-Reason: No characters means no substrings
-
-Test 2: Single character  
-Input: "x"
-Expected: ["x"]
-Reason: Only one possible substring
-
-Test 3: Two characters
-Input: "ab"
-Expected: ["a", "ab", "b"]
-Reason: Start at 'a' gives "a" and "ab", start at 'b' gives "b"
-
-Test 4: Three characters (given example)
-Input: "abc"
-Expected: ["a", "ab", "abc", "b", "bc", "c"]
-Reason: Following the pattern
-
-Test 5: Repeated characters
-Input: "aaa"
-Expected: ["a", "aa", "aaa", "a", "aa", "a"]
-Reason: Even though letters repeat, positions are different
-
-Test 6: Longer realistic string
-Input: "phone"
-Expected: 15 total substrings
-Reason: n(n+1)/2 = 5(6)/2 = 15
-
-3. PSEUDOCODE
-
-FUNCTION consecutiveSubstrings(string):
-    
-    // Edge case
-    IF string.length is 0:
-        RETURN empty array
-    
-    // Setup
-    CREATE empty array called result
-    SET n = string.length
-    
-    // Main logic - nested loops
-    FOR i FROM 0 TO n-1:                    // starting position
-        FOR j FROM i TO n-1:                 // ending position
-            
-            // Get the substring from i to j
-            SET substring = string.slice(i, j + 1)
-            
-            // Add it to results
-            ADD substring to result
-            
-        END inner loop
-    END outer loop
-    
-    RETURN result
-
-END FUNCTION
-
-Walkthrough example with "ab":
-    
-    i=0 (start at 'a'):
-        j=0: slice(0,1) = "a"     → result = ["a"]
-        j=1: slice(0,2) = "ab"    → result = ["a", "ab"]
-    
-    i=1 (start at 'b'):
-        j=1: slice(1,2) = "b"     → result = ["a", "ab", "b"]
-    
-    Final: ["a", "ab", "b"] ✓
-
-
-4. MY SOLUTION APPROACH
+SOLUTION DESCRIPTION  
 
 
 Algorithm Type: Nested Loop (Brute Force)
 
 Why I chose this:
-- Most straightforward way to get ALL substrings
-- Guarantees we don't miss any combinations
-- The nested structure naturally maps to "for each start, try each end"
-- Easy to understand and debug
+- Guarantees finding all consecutive substrings
+- Straightforward to implement and understand
+- Systematically checks every start-end position combination
 
 How it works:
-1. The outer loop (variable i) picks each character as a starting point
-2. The inner loop (variable j) picks each possible ending point from that start
-3. For each i,j pair, I use slice(i, j+1) to extract that substring
-4. I add each substring to the result array
+The outer loop (i) iterates through each character as a starting position.
+The inner loop (j) iterates from that start to the end of the string.
+For each i,j pair, slice(i, j+1) extracts the substring and adds it to results.
 
-The key thing I had to remember: slice(i, j+1) because slice doesn't 
-include the ending index, so to include position j I need j+1.
-
-
-5. TIME COMPLEXITY ANALYSIS
+Example with "abc":
+- i=0: generates "a", "ab", "abc"
+- i=1: generates "b", "bc"
+- i=2: generates "c"
 
 
-TIME COMPLEXITY: O(n³)
-
-Here's how I figured this out:
-
-Step 1 - Count the outer loop:
-The outer loop runs from 0 to n-1, so that's n iterations.
-
-Step 2 - Count the inner loop:
-The inner loop depends on i:
-- When i=0, it runs n times
-- When i=1, it runs n-1 times  
-- When i=2, it runs n-2 times
-- ...
-- When i=n-1, it runs 1 time
-
-Total: n + (n-1) + (n-2) + ... + 1 = n(n+1)/2
-
-This is approximately n²/2, which simplifies to O(n²).
-
-Step 3 - Consider the slice operation:
-The slice(i, j+1) method has to copy characters to create a new string.
-In the worst case (when we're slicing the entire string), this takes O(n) time.
-On average, it's copying about n/2 characters, which is still O(n).
-
-Step 4 - Multiply everything:
-Outer loop: O(n)
-× Inner loop iterations: O(n²)  
-× Slice per iteration: O(n)
-= O(n × n² × n) 
-
-Wait, that's not right. Let me recalculate:
-
-Actually:
-- Outer loop: n iterations (O(n))
-- Inner loop: n iterations per outer loop iteration (O(n))  
-- Slice: O(n) operation
-- Total: O(n) × O(n) × O(n) = O(n³)
-
-SPACE COMPLEXITY: O(n²)
-
-The number of substrings we create is n(n+1)/2.
-For n=5: 5×6/2 = 15 substrings
-For n=10: 10×11/2 = 55 substrings
-
-This grows quadratically, so O(n²).
+TIME COMPLEXITY
 
 
-6. SCALABILITY ANALYSIS
+Time Complexity: O(n³)
+
+Detailed breakdown:
+- Outer loop: runs n times (O(n))
+- Inner loop: runs n(n+1)/2 times total (O(n²))
+- slice() operation: copies characters, takes O(n) time
+- Combined: O(n) × O(n) × O(n) = O(n³)
+
+Space Complexity: O(n²)
+- Number of substrings: n(n+1)/2 ≈ O(n²)
 
 
-The scalable variable: n (the length of the input string)
-
-What happens when n increases:
-
-| n  | Substrings | Approximate Operations | Time Growth |
-|----|------------|------------------------|-------------|
-| 5  | 15         | 125                    | 1x          |
-| 10 | 55         | 1,000                  | 8x          |
-| 20 | 210        | 8,000                  | 64x         |
-| 40 | 820        | 64,000                 | 512x        |
-
-Pattern: When n doubles, time increases by about 8x (because 2³ = 8)
-
-Impact on the looping elements:
-
-1. Outer loop iterations: Increases linearly
-   - n=5 → 5 iterations
-   - n=10 → 10 iterations (2x)
-   - n=20 → 20 iterations (4x)
-
-2. Inner loop total iterations: Increases quadratically  
-   - n=5 → 15 total iterations
-   - n=10 → 55 total iterations (3.67x)
-   - n=20 → 210 total iterations (14x)
-
-3. Slice operations: Each one gets longer too
-   - Average substring length grows with n
-   - More iterations × longer substrings = cubic growth
-
-Real-world implications:
-- For typical search queries (< 50 chars): Very fast, no problem
-- For product descriptions (< 200 chars): Still acceptable
-- For full articles (> 1000 chars): Would start to slow down
-
-For the e-commerce use case mentioned in the lab, this is perfectly fine 
-since product names and search queries are usually short.
+SCALABILITY
 
 
-7. TESTING RESULTS
+When string length doubles, execution time increases by ~8x (2³ = 8).
 
-
-My own tests (before running official tests):
-
-✓ Test 1: "" → [] (PASSED)
-✓ Test 2: "a" → ["a"] (PASSED)
-✓ Test 3: "ab" → ["a", "ab", "b"] (PASSED)
-✓ Test 4: "abc" → ["a", "ab", "abc", "b", "bc", "c"] (PASSED)
-✓ Test 5: "aaa" → ["a", "aa", "aaa", "a", "aa", "a"] (PASSED)
-✓ Test 6: "phone" → 15 substrings (PASSED)
-
-Official tests: All passed ✓
-
-
-8. CHALLENGES I FACED
-
-
-1. At first I was confused about whether to use j or j+1 in the slice method.
-   I had to remind myself that slice(start, end) doesn't include the 
-   character at the end index.
-
-2. I initially thought about using substring() but chose slice() because 
-   it's more commonly used and I'm more familiar with it.
-
-3. Making sure I handled the empty string case correctly at the beginning.
-
-
-9. CONCLUSION
-
-
-This solution successfully generates all consecutive substrings using a 
-nested loop approach. The O(n³) time complexity is acceptable for the 
-intended use case (e-commerce search with short queries).
-
-The algorithm is straightforward, correct, and maintainable. While there 
-might be minor optimizations possible, the brute force approach guarantees 
-we find all substrings without missing any.
+For the e-commerce use case, this is suitable since search queries 
+are typically short (< 50 characters).
